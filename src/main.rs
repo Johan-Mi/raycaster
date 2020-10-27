@@ -3,6 +3,10 @@ mod map;
 mod player;
 mod ray;
 mod render;
+mod textures;
+extern crate gfx;
+extern crate gfx_device_gl;
+extern crate image as im;
 use game::*;
 use piston_window::*;
 use render::*;
@@ -14,6 +18,11 @@ fn main() {
             .resizable(false)
             .build()
             .unwrap();
+
+    let mut texture_context = TextureContext {
+        factory: window.factory.clone(),
+        encoder: window.factory.create_command_buffer().into(),
+    };
 
     let mut game = Game::new();
 
@@ -37,6 +46,8 @@ fn main() {
             game.update(&args);
         }
 
-        window.draw_2d(&event, |context, gfx, _| render(&context, gfx, &game));
+        window.draw_2d(&event, |context, gfx, _| {
+            render(&context, gfx, &mut texture_context, &game)
+        });
     }
 }

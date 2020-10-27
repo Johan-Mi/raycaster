@@ -53,10 +53,16 @@ impl Ray {
             }
         }
 
-        RayHit { dist }
+        RayHit {
+            dist,
+            x: self.x,
+            y: self.y,
+        }
     }
 }
 
 pub struct RayHit {
     pub dist: f64,
+    pub x: f64,
+    pub y: f64,
 }

@@ -992,6 +992,9 @@ dependencies = [
 name = "raycaster"
 version = "0.1.0"
 dependencies = [
+ "gfx",
+ "gfx_device_gl",
+ "image",
  "piston_window",
 ]
 
