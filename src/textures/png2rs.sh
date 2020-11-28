@@ -6,7 +6,7 @@ tex_name="$(echo ${src_file%%.png} | tr '[:lower:]' '[:upper:]')_TEXTURE"
 width=$(file $src_file | cut -d' ' -f5)
 height=$(file $src_file | cut -d' ' -f7)
 height=${height%%,} 
-printf  "pub const ${tex_name}_WIDTH: usize = $width;\\npub const ${tex_name}_HEIGHT: usize = $height;\\npub const ${tex_name}: [[u8; 3]; $width * $height + 1] = [\\n" > $dest_file
+printf  "pub const ${tex_name}_WIDTH: usize = $width;\\npub const ${tex_name}_HEIGHT: usize = $height;\\npub const ${tex_name}: [[u8; 3]; $width * $height] = [\\n" > $dest_file
 2ff < "$src_file" \
 	| hexdump -dv \
 	| tail -n+2 \

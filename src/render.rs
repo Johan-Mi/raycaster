@@ -47,6 +47,11 @@ pub fn render<F, C>(
                 * 10.0) as usize
                 % WALL_TEXTURE_HEIGHT;
 
+            let shade = shade
+                * (1.0
+                    - (i as f32 / wall_height as f32 - 0.5)
+                        * (i as f32 / wall_height as f32 - 0.5));
+
             let wall_color_unshaded =
                 WALL_TEXTURE[tex_y * WALL_TEXTURE_WIDTH + tex_x];
             let wall_color = im::Rgba([
@@ -61,6 +66,30 @@ pub fn render<F, C>(
                 SCREEN_HEIGHT as u32 / 2 + i - wall_height / 2,
                 wall_color,
             );
+        }
+
+        for i in 0..(SCREEN_HEIGHT as u32
+            - wall_height.min(SCREEN_HEIGHT as u32))
+            / 2
+        {
+            let tex_y = (CEILING_TEXTURE_HEIGHT as f32 * i as f32
+                / SCREEN_HEIGHT as f32
+                * 10.0) as usize
+                % CEILING_TEXTURE_HEIGHT;
+            let tex_x = (CEILING_TEXTURE_WIDTH as f32 * row as f32
+                / SCREEN_WIDTH as f32
+                * 10.0) as usize
+                % CEILING_TEXTURE_WIDTH;
+            let ceil_color_unshaded =
+                CEILING_TEXTURE[tex_y * CEILING_TEXTURE_WIDTH + tex_x];
+            let ceil_color = im::Rgba([
+                ceil_color_unshaded[0],
+                ceil_color_unshaded[1],
+                ceil_color_unshaded[2],
+                255,
+            ]);
+            img.put_pixel(row as u32, i, ceil_color);
+            img.put_pixel(row as u32, SCREEN_HEIGHT as u32 - i - 1, ceil_color);
         }
     }
 

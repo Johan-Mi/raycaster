@@ -11,3 +11,6 @@ piston_window = "0.113"
 image = "0.23"
 gfx = "0.18"
 gfx_device_gl = "0.16"
+
+[profile.release]
+panic = "abort"
