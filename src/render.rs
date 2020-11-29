@@ -26,17 +26,14 @@ pub fn render<F, C>(
 
     for row in 0..SCREEN_WIDTH as usize {
         let angle_difference =
-            (row as f64 / SCREEN_WIDTH * 2.0 - 1.0).atan() * FOV;
+            (row as f64 / SCREEN_WIDTH).mul_add(2.0, -1.0).atan() * FOV;
         let angle = game.player.angle + angle_difference;
         let hit = Ray::new(game.player.x, game.player.y, angle).cast(&game.map);
         let dist = hit.dist * angle_difference.cos();
         let wall_height = (SCREEN_HEIGHT * WALL_HEIGHT_SCALE / dist) as u32 * 2;
-        let shade = (-(hit.dist as f32).sqrt() / 6.0).exp();
-        let wall_height_invisible = if wall_height < SCREEN_HEIGHT as u32 {
-            0
-        } else {
-            (wall_height - SCREEN_HEIGHT as u32) / 2
-        };
+        let shade = ((hit.dist as f32).sqrt() / -6.0).exp();
+        let wall_height_invisible =
+            wall_height.saturating_sub(SCREEN_HEIGHT as u32) / 2;
 
         let tex_x =
             ((hit.x + hit.y).fract() * WALL_TEXTURE_WIDTH as f64) as usize;
@@ -68,17 +65,18 @@ pub fn render<F, C>(
             );
         }
 
-        for i in 0..(SCREEN_HEIGHT as u32
-            - wall_height.min(SCREEN_HEIGHT as u32))
-            / 2
-        {
-            let tex_y = (CEILING_TEXTURE_HEIGHT as f32 * i as f32
-                / SCREEN_HEIGHT as f32
-                * 10.0) as usize
+        for i in 0..(SCREEN_HEIGHT as u32).saturating_sub(wall_height) / 2 {
+            let pix_dist =
+                WALL_HEIGHT_SCALE / SCREEN_HEIGHT.mul_add(0.5, -(i as f64));
+            let world_x =
+                hit.x + game.player.angle.cos() * dist * (pix_dist - 1.0);
+            let world_y =
+                hit.y + game.player.angle.sin() * dist * (pix_dist - 1.0);
+            let tex_y = (CEILING_TEXTURE_HEIGHT as f64 * (world_y / 5.0))
+                as usize
                 % CEILING_TEXTURE_HEIGHT;
-            let tex_x = (CEILING_TEXTURE_WIDTH as f32 * row as f32
-                / SCREEN_WIDTH as f32
-                * 10.0) as usize
+            let tex_x = (CEILING_TEXTURE_WIDTH as f64 * (world_x / 5.0))
+                as usize
                 % CEILING_TEXTURE_WIDTH;
             let ceil_color_unshaded =
                 CEILING_TEXTURE[tex_y * CEILING_TEXTURE_WIDTH + tex_x];
