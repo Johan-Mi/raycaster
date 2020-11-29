@@ -21,8 +21,8 @@ impl Ray {
         while dist < Self::MAX_DIST
             && map.get_tile(self.x as usize, self.y as usize) == Tile::Empty
         {
-            let x_frac = self.x % 1.0;
-            let y_frac = self.y % 1.0;
+            let x_frac = self.x.fract();
+            let y_frac = self.y.fract();
 
             let x_diff = if angle_cos > 0.0 {
                 1.0 - x_frac

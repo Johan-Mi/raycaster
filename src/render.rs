@@ -73,13 +73,13 @@ pub fn render<F, C>(
                     wall_height_float / (SCREEN_HEIGHT - 2.0 * i as f64);
                 let pix_dist_adjusted = hit.dist * (pix_dist - 1.0);
 
-                let world_x = hit.x + angle.cos() * pix_dist_adjusted;
-                let world_y = hit.y + angle.sin() * pix_dist_adjusted;
+                let world_x = angle.cos().mul_add(pix_dist_adjusted, hit.x);
+                let world_y = angle.sin().mul_add(pix_dist_adjusted, hit.y);
 
-                let tex_y = (CEILING_TEXTURE_HEIGHT as f64 * (world_y / 4.0))
+                let tex_y = (CEILING_TEXTURE_HEIGHT as f64 * world_y / 4.0)
                     as usize
                     % CEILING_TEXTURE_HEIGHT;
-                let tex_x = (CEILING_TEXTURE_WIDTH as f64 * (world_x / 4.0))
+                let tex_x = (CEILING_TEXTURE_WIDTH as f64 * world_x / 4.0)
                     as usize
                     % CEILING_TEXTURE_WIDTH;
 
