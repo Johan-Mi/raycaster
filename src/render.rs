@@ -65,29 +65,38 @@ pub fn render<F, C>(
             );
         }
 
-        for i in 0..(SCREEN_HEIGHT as u32).saturating_sub(wall_height) / 2 {
-            let pix_dist =
-                WALL_HEIGHT_SCALE / SCREEN_HEIGHT.mul_add(0.5, -(i as f64));
-            let world_x =
-                hit.x + game.player.angle.cos() * dist * (pix_dist - 1.0);
-            let world_y =
-                hit.y + game.player.angle.sin() * dist * (pix_dist - 1.0);
-            let tex_y = (CEILING_TEXTURE_HEIGHT as f64 * (world_y / 5.0))
-                as usize
-                % CEILING_TEXTURE_HEIGHT;
-            let tex_x = (CEILING_TEXTURE_WIDTH as f64 * (world_x / 5.0))
-                as usize
-                % CEILING_TEXTURE_WIDTH;
-            let ceil_color_unshaded =
-                CEILING_TEXTURE[tex_y * CEILING_TEXTURE_WIDTH + tex_x];
-            let ceil_color = im::Rgba([
-                ceil_color_unshaded[0],
-                ceil_color_unshaded[1],
-                ceil_color_unshaded[2],
-                255,
-            ]);
-            img.put_pixel(row as u32, i, ceil_color);
-            img.put_pixel(row as u32, SCREEN_HEIGHT as u32 - i - 1, ceil_color);
+        if wall_height_invisible == 0 {
+            for i in 0..(SCREEN_HEIGHT as u32).saturating_sub(wall_height) / 2 {
+                let pix_dist =
+                    wall_height as f64 / (SCREEN_HEIGHT - 2.0 * i as f64);
+                let pix_dist_adjusted = hit.dist * (pix_dist - 1.0);
+
+                let world_x = hit.x + angle.cos() * pix_dist_adjusted;
+                let world_y = hit.y + angle.sin() * pix_dist_adjusted;
+
+                let tex_y = (CEILING_TEXTURE_HEIGHT as f64 * (world_y / 8.0))
+                    as usize
+                    % CEILING_TEXTURE_HEIGHT;
+                let tex_x = (CEILING_TEXTURE_WIDTH as f64 * (world_x / 8.0))
+                    as usize
+                    % CEILING_TEXTURE_WIDTH;
+
+                let ceil_color_unshaded =
+                    CEILING_TEXTURE[tex_y * CEILING_TEXTURE_WIDTH + tex_x];
+                let shade = ((pix_dist * dist).sqrt() / -6.0).exp();
+                let ceil_color = im::Rgba([
+                    (ceil_color_unshaded[0] as f64 * shade) as u8,
+                    (ceil_color_unshaded[1] as f64 * shade) as u8,
+                    (ceil_color_unshaded[2] as f64 * shade) as u8,
+                    255,
+                ]);
+                img.put_pixel(row as u32, i, ceil_color);
+                img.put_pixel(
+                    row as u32,
+                    SCREEN_HEIGHT as u32 - i - 1,
+                    ceil_color,
+                );
+            }
         }
     }
 
