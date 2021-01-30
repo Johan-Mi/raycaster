@@ -19,8 +19,6 @@ pub fn render<F, C>(
     C: gfx::CommandBuffer<gfx_device_gl::Resources>,
     F: gfx::Factory<gfx_device_gl::Resources>,
 {
-    clear(color::BLACK, gfx);
-
     let mut img =
         im::ImageBuffer::new(SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32);
 

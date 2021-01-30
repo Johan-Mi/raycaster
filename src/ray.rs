@@ -15,6 +15,7 @@ impl Ray {
 
     pub fn cast(mut self, map: &Map) -> RayHit {
         let (angle_sin, angle_cos) = self.angle.sin_cos();
+        let angle_tan = angle_sin / angle_cos;
 
         let mut dist = 0.0;
 
@@ -45,10 +46,10 @@ impl Ray {
             if vert_dist < horiz_dist {
                 dist += vert_dist;
                 self.x += x_diff * 1.001;
-                self.y += x_diff * self.angle.tan();
+                self.y += x_diff * angle_tan;
             } else {
                 dist += horiz_dist;
-                self.x += y_diff / self.angle.tan();
+                self.x += y_diff / angle_tan;
                 self.y += y_diff * 1.001;
             }
         }
